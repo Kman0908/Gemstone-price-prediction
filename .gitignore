@@ -9,3 +9,5 @@ wheels/
 # Virtual environments
 .venv
 catboost_info/
+.vscode/
+logs/
