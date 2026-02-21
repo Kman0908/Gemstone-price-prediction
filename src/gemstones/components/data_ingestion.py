@@ -2,9 +2,10 @@ import os
 import sys
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from gemstones.exception import CustomException
-from gemstones.logger import logging
+from src.gemstones.exception import CustomException
+from src.gemstones.logger import logging
 from dataclasses import dataclass
+from src.gemstones.components.data_transformation import DataTransformation
 
 #initialize data ingestion config
 @dataclass
@@ -22,7 +23,10 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info('Data ingestion started')
         try:
-            data_path = os.path.join('data', 'train.csv')
+            current_dir = os.path.dirname(__file__)
+            project_root = os.path.abspath(os.path.join(current_dir, "../../.."))
+
+            data_path = os.path.join(project_root, "data", "train.csv")
             data = pd.read_csv(data_path)
             logging.info('Data read as pandas dataframe')
 
@@ -48,3 +52,6 @@ class DataIngestion:
 if __name__ == '__main__':
     data_ingestion_obj = DataIngestion()
     train_data, test_data = data_ingestion_obj.initiate_data_ingestion()
+
+    data_transformatin_obj = DataTransformation()
+    train_arr, test_arr, _ = data_transformatin_obj.initiate_data_transformation(train_data, test_data)

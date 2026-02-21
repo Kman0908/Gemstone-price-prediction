@@ -1,8 +1,8 @@
 import sys
-from gemstones.logger import logging
+from src.gemstones.logger import logging
 
-def error_msg_details(error):
-    _, _, exc_tb = sys.exc_info()
+def error_msg_details(error, error_detail: sys):
+    _, _, exc_tb = error_detail.exc_info()
     file_name = exc_tb.tb_frame.f_code.co_filename
 
     error_message = 'Error occurred in python script name [{0}] line no. [{1}] error message [{2}]'.format(
