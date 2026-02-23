@@ -6,6 +6,7 @@ from src.gemstones.exception import CustomException
 from src.gemstones.logger import logging
 from dataclasses import dataclass
 from src.gemstones.components.data_transformation import DataTransformation
+from src.gemstones.components.model_trainer import ModelTrainer
 
 #initialize data ingestion config
 @dataclass
@@ -55,3 +56,6 @@ if __name__ == '__main__':
 
     data_transformatin_obj = DataTransformation()
     train_arr, test_arr, _ = data_transformatin_obj.initiate_data_transformation(train_data, test_data)
+
+    model_trainer = ModelTrainer()
+    model_trainer.initiate_training(train_arr, test_arr)
