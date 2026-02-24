@@ -17,9 +17,9 @@ class Data(BaseModel):
     clarity: Annotated[str, Field(..., description = 'clarity of the stone')]
     depth: Annotated[float, Field(..., description = 'depth of the stone')]
     table: Annotated[float, Field(..., description = 'table of the stone')]
-    x: Annotated[str, Field(..., description = 'dimensions of stone X')]
-    y: Annotated[str, Field(..., description = 'dimensions of stone Y')]
-    z: Annotated[str, Field(..., description = 'dimensions of stone Z')]
+    x: Annotated[float, Field(..., description = 'dimensions of stone X')]
+    y: Annotated[float, Field(..., description = 'dimensions of stone Y')]
+    z: Annotated[float, Field(..., description = 'dimensions of stone Z')]
 
 @app.get('/')
 def home():
@@ -39,6 +39,7 @@ def predict(input: Data):
         cut = input.cut,
         color = input.color,
         clarity = input.clarity,
+        depth = input.depth,
         table = input.table,
         x = input.x,
         y = input.y,
