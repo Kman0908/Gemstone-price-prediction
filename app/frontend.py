@@ -1,48 +1,69 @@
 import streamlit as st
-import requests
-import sys
+import pandas as pd
+import pickle
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.gemstones.exception import CustomException
-from src.gemstones.logger import logging
 
-st.title('Gemstones Price Predictor')
+st.set_page_config(page_title="Gemstone Price Predictor")
 
-with st.form('Gem Features: '):
-    carat = st.number_input('carat of gem', min_value = 0.0, max_value = 3.5, value = 1.0)
-    cut = st.selectbox(label = 'cut quality of gem', options = ['Premium', 'Very Good', 'Ideal', 'Good', 'Fair'])
-    color = st.selectbox(label = 'color of the gem', options = ['F', 'J', 'G', 'E', 'D', 'H', 'I'])
-    clarity = st.selectbox(label = 'clarity of the gem', options = ['VS2', 'SI2', 'VS1', 'SI1', 'IF', 'VVS2', 'VVS1', 'I1'])
-    depth = st.number_input(label = 'depth of the gem', min_value = 0.0, max_value = 72.0, value = 35.0)
-    table = st.number_input(label = 'tabel of the gem', min_value = 0.0, max_value = 80.0, value = 40.0)
-    x = st.number_input(label = 'dimensions of gem (x)', min_value = 0.0, max_value = 10.0, value = 5.0)
-    y = st.number_input(label = 'dimensions of gem (y)', min_value = 0.0, max_value = 10.0, value = 5.0)
-    z = st.number_input(label = 'dimensions of gem (z)', min_value = 0.0, max_value = 35.0, value = 15.0)
+st.title("💎 Gemstone Price Prediction")
 
-    submit = st.form_submit_button(label = 'Submit')
+# -----------------------------
+# Load Model
+# -----------------------------
+@st.cache_resource
+def load_model():
+    model_path = os.path.join("artifacts", "model.pkl")
+    with open(model_path, "rb") as file:
+        model = pickle.load(file)
+    return model
 
-if submit:
-    paylod = {
-        'carat': carat,
-        'cut': cut,
-        'color': color,
-        'clarity': clarity,
-        'depth': depth,
-        'table': table,
-        'x': x,
-        'y': y,
-        'z': z
-    }
+model = load_model()
+
+# -----------------------------
+# User Inputs
+# -----------------------------
+
+carat = st.number_input("Carat", min_value=0.0, max_value=5.0, value=1.0, step=0.1)
+
+depth = st.number_input("Depth", min_value=0.0, max_value=100.0, value=60.0, step=0.1)
+
+table = st.number_input("Table", min_value=0.0, max_value=100.0, value=55.0, step=0.1)
+
+x = st.number_input("Length (x)", min_value=0.0, max_value=20.0, value=5.0, step=0.1)
+
+y = st.number_input("Width (y)", min_value=0.0, max_value=20.0, value=5.0, step=0.1)
+
+z = st.number_input("Height (z)", min_value=0.0, max_value=20.0, value=3.0, step=0.1)
+
+cut = st.selectbox("Cut", ["Fair", "Good", "Very Good", "Premium", "Ideal"])
+
+color = st.selectbox("Color", ["D", "E", "F", "G", "H", "I", "J"])
+
+clarity = st.selectbox("Clarity", ["I1", "SI2", "SI1", "VS2", "VS1", "VVS2", "VVS1", "IF"])
+
+# -----------------------------
+# Prediction
+# -----------------------------
+
+if st.button("Predict Price"):
 
     try:
-        with st.spinner('Finding result'):
-            response = requests.post('http://127.0.0.1:8000/predict', json = paylod)
+        input_data = pd.DataFrame({
+            "carat": [carat],
+            "depth": [depth],
+            "table": [table],
+            "x": [x],
+            "y": [y],
+            "z": [z],
+            "cut": [cut],
+            "color": [color],
+            "clarity": [clarity]
+        })
 
-            if response.status_code == 200:
-                prediction = response.json()
-                value = response.json().get('predicted', [0])[0]
-                st.success(f'Predicted rate is: ${round(value, 2)}')
-                st.balloons()
+        prediction = model.predict(input_data)[0]
+
+        st.success(f"💰 Estimated Price: ${round(prediction, 2)}")
+
     except Exception as e:
-        logging.exception('Error occurred at frontend')
-        raise CustomException(e, sys)
+        st.error("Something went wrong during prediction.")
+        st.write(e)
