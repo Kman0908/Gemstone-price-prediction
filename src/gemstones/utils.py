@@ -74,3 +74,13 @@ def print_result(model, X_train, X_test, y_train, y_test):
     except Exception as e:
         logging.exception('Exception Occurred at Print result')
         raise CustomException(e, sys)
+
+def load_objects(file_path):
+    with open(file_path, 'rb') as f:
+        try:
+            with open(file_path, 'rb') as f:
+                return dill.load(f)
+        except Exception as e:
+            logging.exception('Exception occurred at load_object')
+            raise CustomException(e, sys)
+    
