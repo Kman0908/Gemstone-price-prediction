@@ -1,10 +1,10 @@
 import streamlit as st
 import requests
-from src.gemstones.exception import CustomException
-from src.gemstones.logger import logging
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.gemstones.exception import CustomException
+from src.gemstones.logger import logging
 
 st.title('Gemstones Price Predictor')
 
