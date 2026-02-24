@@ -3,6 +3,8 @@ import requests
 from src.gemstones.exception import CustomException
 from src.gemstones.logger import logging
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 st.title('Gemstones Price Predictor')
 
