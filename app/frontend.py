@@ -16,8 +16,14 @@ def load_model():
     with open(model_path, "rb") as file:
         model = pickle.load(file)
     return model
+def load_preprocessor():
+    preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+    with open(preprocessor_path, "rb") as file:
+        preprocessor = pickle.load(file)
+    return preprocessor
 
 model = load_model()
+preprocessor = load_preprocessor()
 
 # -----------------------------
 # User Inputs
@@ -59,8 +65,8 @@ if st.button("Predict Price"):
             "color": [color],
             "clarity": [clarity]
         })
-
-        prediction = model.predict(input_data)[0]
+        data_scaled = preprocessor.transform(input_data)
+        prediction = model.predict(data_scaled)[0]
 
         st.success(f"💰 Estimated Price: ${round(prediction, 2)}")
 
